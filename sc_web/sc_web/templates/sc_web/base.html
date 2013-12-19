@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    {% block extrameta %}{% endblock extrameta %}
+    <title>{% block title %}OSTIS{% endblock %}</title>
+
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}common/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}common/bootstrap/css/bootstrap-multilevel.css" />
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}components/css/common.css" />
+    {% block extrastyles %}{% endblock extrastyles %}
+
+    {% include 'sc_web/common.html' %}
+    {% block extrapluginscripts %}{% endblock extrapluginscripts %}
+
+    {% include 'sc_web/components.html' %}
+    {% block extrascripts %}{% endblock extrascripts %}
+
+    {% block head %}{% endblock %}
+</head>
+
+{% block body %}
+<body id="home">
+
+    <!-- header -->
+    <!--<div class="page-header">
+        <h1>IMS<small>OSTIS</small></h1>
+    </div>-->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="banner">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">OSTIS</a>
+            <!-- Help button -->
+            <div id="help_button" class="help_button navbar-form pull-left">
+                <a data-toggle="modal" href="{{ STATIC_URL }}components/html/help.html" data-target="#helpModal"><img src="{{ STATIC_URL }}components/images/help-red.png" class="help_button"/></a>
+            </div>
+        </div>
+
+        <div id="menu_container">
+            <!-- there will be placed menu items -->
+        </div>
+        <div id="task_panel" class="task_icon navbar-form pull-right">
+            <div id="task_num" class="task_text">0</div>
+        </div>
+
+        
+
+        <div id="auth-user-panel" class="pull-right">
+            {% if user.is_authenticated %}
+            <div id="auth-user-registered">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <div class="auth-user-image pull-left" ></div>
+                            <div id="auth-user-name" class="pull-left">{# name will be placed later #}</div>
+                            <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li class="dropdown-submenu">
+                                <a href="#" id="auth-user-lang"></a>
+                                <ul class="dropdown-menu">
+									<li><a>test</a></li>
+									<li><a>test2</a></li>
+                                </ul>
+                            </li>
+                            <li>
+								<a id="auth-user-ext-lang"></a>
+                            </li>
+                            <li class="divider"></li>
+                            <li><a href="{% url accounts:logout %}">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            {% else %}
+            <ul class="nav navbar-nav">
+                <li><a href="#js-accounts-login-modal" data-toggle="modal">Login</a></li>
+                {# <li><a href="{% url accounts:registration %}">Register</a></li> #}
+            </ul>
+            {% endif %}
+        </div>
+        
+        <div id="language-panel" class="pull-right">
+			<form class="navbar-form navbar-right" role="search">
+				<select id="language-select" class="form-control" style="width: 150px;">
+				</select>
+			</form>
+		</div>
+		
+		<div id="search-panel">
+			<form class="navbar-form navbar-right" role="search">
+			  <div class="form-group">
+				<input type="text" class="form-control" placeholder="Search">
+			  </div>
+			  <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-search"></span></button>
+			</form>
+		</div>
+    </nav>
+
+    <!-- main content -->
+    <div id="main-container" class="main-container row">
+        <div class="col-xs-2 col-sm-2 col-md-2">
+            <div id="history-container" class="panel panel-default">
+				<div class="btn-group">
+					<button type="button" class="histoy-item-btn btn btn-success dropdown-toggle" data-toggle="dropdown">
+						<span class="glyphicon glyphicon-list-alt"></span>
+					</button>
+					<ul id="history-item-langs" class="dropdown-menu" role="menu">
+						{# languages will be added #}
+					</ul>
+				</div>
+				<div>
+					<ul id="history-items" class="list-group">
+						{# Tabs will be added later #}
+					</ul>
+                </div>
+            </div>
+        </div>
+        <div id="window-container" class="col-xs-10 col-sm-10 col-md-10">
+            {# Windows will be add later #}
+        </div>
+        {% block content %}{% endblock %}
+    </div>
+
+    <div id="footer" class="navbar navbar-inverse navbar-fixed-bottom">
+        <div class="navbar-inner">
+            <div id="arguments_container" class="argument-container">
+                <button id="arguments_clear_button" class="btn btn-danger">Clear</button>
+                
+                <div id="arguments_buttons" class="btn-group argument-buttons">
+                    <!-- Buttons will be inserted on arguments append -->
+                </div>
+
+                
+            </div>
+            Copyright © 2012 <a href="#">OSTIS</a>
+        </div>
+    </div>
+
+
+    <!-- Modal -->
+    <div id="helpModal" class="modal" tabindex="-1" role="dialog" aria-labelledby="Help" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body" id="helpModalBody">
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div>
+
+    {% if not user.is_authenticated %}
+        {% include 'accounts/_scripts.html' %}
+    {% endif %}
+
+    <script type="text/javascript">
+
+        $(document).ready(function() {
+            SCWeb.ui.Locker.show();
+            var params = {
+                        menu_container_id: 'menu_container'
+                    };
+            SCWeb.core.Main.init(params, function() {
+                SCWeb.core.Server.resolveScAddr(['project_ostis'], function(addrs) {
+                    var argumentAddr = addrs['project_ostis'];
+                    //var window = SCWeb.core.ui.Windows.createWindow(outputAddr);
+                    SCWeb.core.Main.doDefaultCommand([argumentAddr]);
+                });
+            });
+        });
+
+        $('#help_button').click(function() {
+            $('#helpModal').modal({"keyboard": true});
+        });
+    </script>
+
+</script>
+
+<div id="sc-ui-locker">
+    <div id="sc-ui-locker-text">Loading...</div>
+    <div id="sc-ui-locker-icon"></div>   
+</div>
+
+{% include 'sc_web/base_google_analitycs.html' %}
+
+</body>
+{% endblock body %}
+
+</html>
